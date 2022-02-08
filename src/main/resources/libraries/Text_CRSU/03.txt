@@ -1,0 +1,5 @@
+Index=1008
+Author=Bob
+Name=book3CRSU
+Issued=2022.12.22
+IssuedTo=Grisha

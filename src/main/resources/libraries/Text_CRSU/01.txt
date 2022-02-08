@@ -1,0 +1,5 @@
+Index=1006
+Author=Henry
+Name=book1CRSU
+Issued=2011.11.11
+IssuedTo=Pavel

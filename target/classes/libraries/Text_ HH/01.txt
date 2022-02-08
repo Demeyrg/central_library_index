@@ -1,0 +1,5 @@
+Index=1009
+Author=Kalinin
+Name=451gradusPoFarengeitu
+Issued=2022.12.22
+IssuedTo=Erasyl
