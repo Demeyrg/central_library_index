@@ -5,6 +5,7 @@ import entity.Book;
 import services.BookService;
 
 import java.util.List;
+import java.util.Map;
 
 public class CommandHandler {
 
@@ -30,20 +31,42 @@ public class CommandHandler {
                 findBooks(line);
                 break;
             case "ORDER":
-                orderBook();
+                orderBook(line);
                 break;
             case "RETURN":
                 returnBook();
                 break;
+            default:
+                System.out.println("SYNTAXERROR");
         }
     }
 
     private void findBooks(String[] line) {
-        bookService.findBook(line);
+        Map<Long, Book> books = bookService.findBook(line);
+        if (books.size() == 0) {
+            System.out.println("NOTFOUND");
+            return;
+        }
+
+        for (Map.Entry<Long, Book> book : books.entrySet()) {
+            if (book.getValue().getIssuedTo().equals(""))
+                System.out.printf("FOUND id=%d, lib=%s\n"
+                        , book.getKey()
+                        , book.getValue().getLibrary());
+            else
+                System.out.printf("FOUNDMISSING id=%d, lib=%s, issued=%s\n"
+                        , book.getKey()
+                        , book.getValue().getLibrary()
+                        , book.getValue().getIssued());
+        }
     }
 
-    private void orderBook() {
-        System.out.println("orderBook");
+    private void orderBook(String[] params) {
+        if (params.length != 3) {
+            System.out.println("Формат ввода: ORDER id=<индекс> abonent=<имя абонента>");
+            return;
+        }
+        bookService.orderBook(params);
     }
 
     private void returnBook() {

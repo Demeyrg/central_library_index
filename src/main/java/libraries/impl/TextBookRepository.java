@@ -2,8 +2,7 @@ package libraries.impl;
 
 import entity.Book;
 import libraries.BookRepository;
-import mapper.BookMapper;
-import mapper.impl.TextBookMapper;
+import mapper.TextBookMapper;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -11,9 +10,9 @@ import java.util.List;
 
 public class TextBookRepository implements BookRepository {
 
-    private BookMapper bookMapper = new TextBookMapper();
+    private TextBookMapper textBookMapper = new TextBookMapper();
 
-    public static final File PATH = new File("src/main/resources/libraries/");
+    private static final File PATH = new File("src/main/resources/libraries/");
 
     @Override
     public List<Book> getAllBooks() {
@@ -29,16 +28,14 @@ public class TextBookRepository implements BookRepository {
 
     private void takeBookFromLibrary(File[] files, List<Book> books) {
         for(File file: files) {
-            Book book = bookMapper.createBook(file);
+            Book book = textBookMapper.createBook(file);
             books.add(book);
         }
     }
 
-
-
     @Override
-    public void orderBook(Book book) {
-
+    public Book orderBook(Long id, String issuedTo) {
+        return new Book();
     }
 
     @Override

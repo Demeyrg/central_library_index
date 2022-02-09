@@ -1,13 +1,11 @@
-package mapper.impl;
+package mapper;
 
 import entity.Book;
-import mapper.BookMapper;
 
 import java.io.*;
 
-public class TextBookMapper implements BookMapper {
+public class TextBookMapper {
 
-    @Override
     public Book createBook(File file) {
         Book book = new Book();
         book.setLibrary(file.getParentFile().getName());

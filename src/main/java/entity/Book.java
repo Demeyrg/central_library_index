@@ -10,10 +10,12 @@ public class Book {
     private String issuedTo = "";
     private String library;
 
-    public Book(Long id, String author, String name) {
+    public Book(Long id, String author, String name, String issued, String issuedTo) {
+        this.id = id;
         this.author = author;
         this.name = name;
-        this.id = id;
+        this.issued=issued;
+        this.issuedTo=issuedTo;
     }
 
     public Book() {
