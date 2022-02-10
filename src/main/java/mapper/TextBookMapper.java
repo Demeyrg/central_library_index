@@ -25,22 +25,23 @@ public class TextBookMapper {
     }
 
 
-    private void fillBook(String firstElement, String secondElement, Book book) {
+    public void fillBook(String param, String value, Book book) {
 
-        if (firstElement.equalsIgnoreCase("Index"))
-            book.setId(Long.valueOf(secondElement));
+        if (param.equalsIgnoreCase("Index"))
+            book.setId(Long.valueOf(value));
 
-        if (firstElement.equalsIgnoreCase("Author"))
-            book.setAuthor(secondElement);
+        if (param.equalsIgnoreCase("Author"))
+            book.setAuthor(value);
 
-        if (firstElement.equalsIgnoreCase("Name"))
-            book.setName(secondElement);
+        if (param.equalsIgnoreCase("Name"))
+            book.setName(value);
 
-        if (firstElement.equalsIgnoreCase("Issued"))
-            book.setIssued(secondElement);
+        if (param.equalsIgnoreCase("Issued"))
+            book.setIssued(value);
 
-        if (firstElement.equalsIgnoreCase("IssuedTo"))
-            book.setIssuedTo(secondElement);
+        if (param.equalsIgnoreCase("IssuedTo"))
+            book.setIssuedTo(value);
 
     }
+
 }

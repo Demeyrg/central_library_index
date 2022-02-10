@@ -1,5 +1,5 @@
 Index=1007
 Author=Mike
 Name=book2CRSU
-Issued=
-IssuedTo=
+Issued=2022.02.10
+IssuedTo=addddd
