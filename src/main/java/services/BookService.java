@@ -1,11 +1,9 @@
 package services;
 
-import entity.Book;
-
-import java.util.Map;
-
 public interface BookService {
-    Map<Long, Book> findBook(String[] params);
+    void findBookByOneParam(String param);
+
+    void findBookByTwoParam(String paramOne, String paramTwo);
 
     void orderBook(String[] params);
 

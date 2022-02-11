@@ -5,99 +5,97 @@ import libraries.BookRepository;
 import mapper.TextBookMapper;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class TextBookRepository implements BookRepository {
 
-    private TextBookMapper textBookMapper = new TextBookMapper();
+    private final TextBookMapper textBookMapper = new TextBookMapper();
 
-    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("yyyy.MM.dd");
+    private final File[] files;
 
-    private static final File[] FILES = new File("src/main/resources/libraries/").listFiles();
-
-    private static StringBuilder builder = new StringBuilder();
+    public TextBookRepository(File[] files) {
+        this.files = files;
+    }
 
     @Override
-    public List<Book> getAllBooks() {
+    public List<Book> getBooksByName(String name) {
+        List<Book> allBooks = getAllBooksFromLibrariesText();
+        List<Book> booksByParam = new ArrayList<>();
+        for (Book book:allBooks) {
+            if (book.getName().contains(name))
+                booksByParam.add(book);
+        }
+        return booksByParam;
+    }
+
+    @Override
+    public List<Book> getBooksByAuthor(String author) {
+        List<Book> allBooks = getAllBooksFromLibrariesText();
+        List<Book> booksByParam = new ArrayList<>();
+        for (Book book:allBooks) {
+            if (book.getAuthor().contains(author))
+                booksByParam.add(book);
+        }
+        return booksByParam;
+    }
+
+    @Override
+    public List<Book> getBooksByAuthorAndName(String author, String name) {
+        List<Book> allBooks = getAllBooksFromLibrariesText();
+        List<Book> booksByParam = new ArrayList<>();
+        for (Book book:allBooks) {
+            if (book.getAuthor().contains(author) && book.getName().contains(name))
+                booksByParam.add(book);
+        }
+        return booksByParam;
+    }
+
+    private List<Book> getAllBooksFromLibrariesText() {
         List<Book> books = new ArrayList<>();
-        for (File file: FILES) {
-            if (!file.getName().startsWith("Text_") || !file.isDirectory())
+        assert files != null;
+        for (File libraries: files) {
+            if (!libraries.getName().startsWith("Text_") || !libraries.isDirectory()
+                    || Objects.requireNonNull(libraries.listFiles()).length <= 0)
                 continue;
-            takeBookFromLibrary(file.listFiles(), books);
+            for (File file : Objects.requireNonNull(libraries.listFiles())) {
+                if (file.isDirectory())
+                    continue;
+                books.add(textBookMapper.returnBook(file));
+            }
         }
         return books;
     }
 
-    private void takeBookFromLibrary(File[] files, List<Book> books) {
-        for(File file: files) {
-            if (file.isDirectory())
-                continue;
-            Book book = textBookMapper.createBook(file);
-            books.add(book);
-        }
-    }
-
     @Override
-    public Book orderBook(Long id, String issuedTo) {
-//        Book book = new Book();
-//        for (File filesInLibrary: FILES) {
-//            if (!filesInLibrary.getName().startsWith("Text_") || !filesInLibrary.isDirectory())
-//                continue;
-//            for(File file: filesInLibrary.listFiles()) {
-//                if (file.isDirectory())
-//                    continue;
-//                book = orderBookFromLibrary(file,id,issuedTo);
-//                if (book != null && book.getId().longValue() == id)
-//                    return book;
-//            }
-//        }
-        return null;
+    public Optional<Book> orderBook(Long id, String issued, String issuedTo) {
+        List<File> filesInLibraries = getFilesInLibraries();
+        StringBuilder builder = new StringBuilder();
+        Book book = new Book();
+        for (File file: filesInLibraries) {
+            book = createBookByIdIfExist(id,issued,issuedTo, builder, file);
+            if (book.getId() != null && book.getId().equals(id)) {
+                if(book.getIssuedTo().equals(""))
+                    rewriteFileInLibrary(file, builder.toString());
+                break;
+            }
+        }
+        if (book.getId() == null)
+            return Optional.empty();
+        return Optional.of(book);
     }
-
-//    private Book orderBookFromLibrary(File file, Long idSearch, String issuedTo) {
-//        StringBuilder builder = new StringBuilder();
-//        Book book = null;
-//        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-//            while (reader.ready()) {
-//                String paramAndValueRow = reader.readLine();
-//                String[] paramAndValue = paramAndValueRow.split("=");
-//                if (paramAndValue[0].equals("Index") && idSearch != Long.valueOf(paramAndValue[1]).longValue())
-//                    break;
-//                if (book == null)
-//                    book = new Book();
-//                if (emptyParam(paramAndValue) && paramAndValue[0].equals("Issued")) {
-//                    textBookMapper.fillBook("Issued", FORMATTER.format(new Date()), book);
-//                    builder.append(paramAndValueRow + book.getIssued() +"\n");
-//                } else if (emptyParam(paramAndValue) && paramAndValue[0].equals("IssuedTo")) {
-//                    textBookMapper.fillBook("IssuedTo", issuedTo, book);
-//                    builder.append(paramAndValueRow + book.getIssuedTo());
-//                } else {
-//                    textBookMapper.fillBook(paramAndValue[0],paramAndValue[1],book);
-//                    builder.append(paramAndValueRow + "\n");
-//                }
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        if (book != null)
-//            rewriteFileInLibrary(file, builder.toString());
-//        return book;
-//    }
 
     @Override
     public Optional<Book> returnBook(Long id) {
         List<File> filesInLibraries = getFilesInLibraries();
+        StringBuilder builder = new StringBuilder();
         Book book = new Book();
         for (File file: filesInLibraries) {
-            book = createBookByIdIfExist(file,id,"","");
+            book = createBookByIdIfExist(id,"","", builder, file);
             if (book.getId() != null && book.getId().equals(id)) {
-                rewriteFileInLibrary(file,builder.toString());
+                rewriteFileInLibrary(file, builder.toString());
                 break;
             }
         }
@@ -107,22 +105,22 @@ public class TextBookRepository implements BookRepository {
     }
 
     private List<File> getFilesInLibraries() {
-        List<File> files = new ArrayList<>();
-        for (File libraries : FILES) {
-            if (!libraries.getName().startsWith("Text_") || !libraries.isDirectory())
+        List<File> filesInLibrary = new ArrayList<>();
+        for (File libraries : files) {
+            if (!libraries.getName().startsWith("Text_") || !libraries.isDirectory()
+                    || Objects.requireNonNull(libraries.listFiles()).length <= 0)
                 continue;
-            for (File file : libraries.listFiles()) {
+            for (File file : Objects.requireNonNull(libraries.listFiles())) {
                 if (file.isDirectory())
                     continue;
-                files.add(file);
+                filesInLibrary.add(file);
             }
         }
-        return files;
+        return filesInLibrary;
     }
 
-    private Book createBookByIdIfExist(File file, Long id, String issued, String issuedTo) {
+    private Book createBookByIdIfExist(Long id, String issued, String issuedTo, StringBuilder builder, File file) {
         Book book = new Book();
-        builder.setLength(0);
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             while (reader.ready()) {
                 String bookParamsValue = reader.readLine();
@@ -131,18 +129,16 @@ public class TextBookRepository implements BookRepository {
                     break;
                 }
                 if (paramAndValue[0].equals("Issued")) {
-                    book.setIssued(issued);
-                    builder.append("Issued=" + issued +"\n");
+                    book.setIssued(paramAndValue.length == 2 ? paramAndValue[1] : "");
+                    builder.append("Issued=").append(issued).append("\n");
                 } else if (paramAndValue[0].equals("IssuedTo")) {
-                    book.setIssued(issuedTo);
-                    builder.append("IssuedTo=" + issuedTo);
+                    book.setIssuedTo(paramAndValue.length == 2 ? paramAndValue[1] : "");
+                    builder.append("IssuedTo=").append(issuedTo);
                 } else {
                     textBookMapper.fillBook(paramAndValue[0],paramAndValue[1],book);
-                    builder.append(bookParamsValue + "\n");
+                    builder.append(bookParamsValue).append("\n");
                 }
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

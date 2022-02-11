@@ -8,25 +8,22 @@ import java.util.List;
 
 public class CSVBookMapper {
 
-    public List<Book> createListBooks(File file) {
+    public List<Book> returnListBooks(File file) {
         List<Book> books = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             while (reader.ready()) {
                 String[] splitLine = reader.readLine().split(",");
-                Book book = new Book();
-                book.setLibrary(file.getParentFile().getName());
-                createBook(splitLine, book);
-                books.add(book);
+                books.add(returnBook(splitLine, file.getParentFile().getName()));
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return books;
     }
 
-    private void createBook(String[] splitLine, Book book) {
+    private Book returnBook(String[] splitLine, String name) {
+        Book book = new Book();
+        book.setLibrary(name);
 
         if (splitLine[0] != null)
             book.setId(Long.valueOf(splitLine[0]));
@@ -37,11 +34,13 @@ public class CSVBookMapper {
         if (splitLine[2] != null)
             book.setName(splitLine[2]);
 
-        if (splitLine.length > 3 && splitLine[3] != null && !splitLine[3].equals(""))
+        if (splitLine.length > 3 && splitLine[3] != null)
             book.setIssued(splitLine[3]);
 
-        if (splitLine.length > 4 && splitLine[4] != null && !splitLine[4].equals(""))
+        if (splitLine.length > 4 && splitLine[4] != null)
             book.setIssuedTo(splitLine[4]);
+        return book;
     }
-
 }
+
+// && !splitLine[4].equals("")

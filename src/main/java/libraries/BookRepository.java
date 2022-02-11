@@ -6,9 +6,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookRepository {
-    List<Book> getAllBooks();
 
     Optional<Book> returnBook(Long id);
 
-    Book orderBook(Long id, String issuedTo);
+    Optional<Book> orderBook(Long id, String issued, String issuedTo);
+
+    List<Book> getBooksByName(String name);
+
+    List<Book> getBooksByAuthor(String author);
+
+    List<Book> getBooksByAuthorAndName(String author, String name);
 }

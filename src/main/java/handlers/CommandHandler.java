@@ -1,17 +1,25 @@
 package handlers;
 
 
-import entity.Book;
+import libraries.impl.CSVBookRepository;
+import libraries.impl.TextBookRepository;
 import services.BookServiceImpl;
 
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.util.Arrays;
 
 public class CommandHandler {
 
-    public static CommandHandler commandHandler;
+    private static CommandHandler commandHandler;
+    private final BookServiceImpl bookService;
+    private final File[] libraries = new File("src/main/resources/libraries/").listFiles();
 
-    private BookServiceImpl bookService = new BookServiceImpl();
+    {
+        bookService = new BookServiceImpl(Arrays.asList(
+                new TextBookRepository(libraries),
+                new CSVBookRepository(libraries)
+        ));
+    }
 
     private CommandHandler() {
     }
@@ -25,7 +33,6 @@ public class CommandHandler {
 
     public void handling(String command) {
         String[] line = command.split(" ");
-        List<Book> books;
         switch (line[0]) {
             case "FIND":
                 findBooks(line);
@@ -41,24 +48,16 @@ public class CommandHandler {
         }
     }
 
-    private void findBooks(String[] line) {
-        Map<Long, Book> books = bookService.findBook(line);
-        if (books.size() == 0) {
-            System.out.println("NOTFOUND");
-            return;
-        }
-
-        for (Map.Entry<Long, Book> book : books.entrySet()) {
-            if (book.getValue().getIssuedTo().equals(""))
-                System.out.printf("FOUND id=%d, lib=%s\n"
-                        , book.getKey()
-                        , book.getValue().getLibrary());
-            else
-                System.out.printf("FOUNDMISSING id=%d, lib=%s, issued=%s\n"
-                        , book.getKey()
-                        , book.getValue().getLibrary()
-                        , book.getValue().getIssued());
-        }
+    private void findBooks(String[] params) {
+        if (params.length == 2 && isParam(params[1])
+                && ( params[1].startsWith("name=") || params[1].startsWith("author=") ) )
+            bookService.findBookByOneParam(params[1]);
+        else if (params.length == 3 && isParam(params[1]) && isParam(params[2])
+                && ( params[1].startsWith("name=") || params[1].startsWith("author=") )
+                && ( params[2].startsWith("name=") || params[2].startsWith("author=") ) )
+            bookService.findBookByTwoParam(params[1], params[2]);
+        else
+            System.out.println("SYNTAXERROR");
     }
 
     private void orderBook(String[] params) {
@@ -80,9 +79,6 @@ public class CommandHandler {
 
     private boolean isParam(String param) {
         String[] splitParam = param.split("=");
-        if (splitParam.length == 2) {
-            return true;
-        }
-        return false;
+        return splitParam.length == 2;
     }
 }

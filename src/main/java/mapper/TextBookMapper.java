@@ -6,7 +6,7 @@ import java.io.*;
 
 public class TextBookMapper {
 
-    public Book createBook(File file) {
+    public Book returnBook(File file) {
         Book book = new Book();
         book.setLibrary(file.getParentFile().getName());
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -16,8 +16,6 @@ public class TextBookMapper {
                     continue;
                 fillBook(splitLine[0], splitLine[1], book);
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
