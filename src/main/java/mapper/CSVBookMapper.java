@@ -42,5 +42,3 @@ public class CSVBookMapper {
         return book;
     }
 }
-
-// && !splitLine[4].equals("")

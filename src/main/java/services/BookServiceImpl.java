@@ -73,7 +73,7 @@ public class BookServiceImpl implements BookService{
         Optional<Book> optionalBook = Optional.empty();
         String issued = new SimpleDateFormat("yyyy.MM.dd").format(new Date());
         for (BookRepository repository: bookRepositories) {
-            optionalBook = repository.orderBook(id, issued, issuedTo);
+            optionalBook = repository.orderBookInLibrary(id, issued, issuedTo);
             if(optionalBook.isEmpty()) {
                 continue;
             }
@@ -100,7 +100,7 @@ public class BookServiceImpl implements BookService{
     private void returnBookInRepository(Long id) {
         Optional<Book> optionalBook = Optional.empty();
         for (BookRepository repository: bookRepositories) {
-            optionalBook = repository.returnBook(id);
+            optionalBook = repository.returnBookInLibrary(id);
             if(optionalBook.isEmpty()) {
                 continue;
             }

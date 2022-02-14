@@ -69,7 +69,7 @@ public class CSVBookRepository implements BookRepository {
     }
 
     @Override
-    public Optional<Book> orderBook(Long id, String issued, String issuedTo) {
+    public Optional<Book> orderBookInLibrary(Long id, String issued, String issuedTo) {
         List<File> filesInLibraries = getFilesInLibraries();
         Book book = new Book();
         for (File file: filesInLibraries) {
@@ -87,7 +87,7 @@ public class CSVBookRepository implements BookRepository {
     }
 
     @Override
-    public Optional<Book> returnBook(Long id) {
+    public Optional<Book> returnBookInLibrary(Long id) {
         List<File> filesInLibraries = getFilesInLibraries();
         Book book = new Book();
         for (File file: filesInLibraries) {

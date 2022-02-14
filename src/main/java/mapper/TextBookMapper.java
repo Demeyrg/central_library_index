@@ -42,4 +42,21 @@ public class TextBookMapper {
 
     }
 
+    public Book returnBookByName(File file, String name) {
+        Book book = new Book();
+        book.setLibrary(file.getParentFile().getName());
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            while (reader.ready()) {
+                String[] splitLine = reader.readLine().split("=");
+                if (splitLine.length < 2)
+                    continue;
+                if (splitLine[0].equals("Name") && !splitLine[1].contains(name))
+                    continue;
+                fillBook(splitLine[0], splitLine[1], book);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return book;
+    }
 }

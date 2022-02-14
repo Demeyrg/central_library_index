@@ -24,7 +24,7 @@ public class TextBookRepository implements BookRepository {
     public List<Book> getBooksByName(String name) {
         List<Book> allBooks = getAllBooksFromLibrariesText();
         List<Book> booksByParam = new ArrayList<>();
-        for (Book book:allBooks) {
+        for (Book book : allBooks) {
             if (book.getName().contains(name))
                 booksByParam.add(book);
         }
@@ -35,7 +35,7 @@ public class TextBookRepository implements BookRepository {
     public List<Book> getBooksByAuthor(String author) {
         List<Book> allBooks = getAllBooksFromLibrariesText();
         List<Book> booksByParam = new ArrayList<>();
-        for (Book book:allBooks) {
+        for (Book book : allBooks) {
             if (book.getAuthor().contains(author))
                 booksByParam.add(book);
         }
@@ -46,7 +46,7 @@ public class TextBookRepository implements BookRepository {
     public List<Book> getBooksByAuthorAndName(String author, String name) {
         List<Book> allBooks = getAllBooksFromLibrariesText();
         List<Book> booksByParam = new ArrayList<>();
-        for (Book book:allBooks) {
+        for (Book book : allBooks) {
             if (book.getAuthor().contains(author) && book.getName().contains(name))
                 booksByParam.add(book);
         }
@@ -56,7 +56,7 @@ public class TextBookRepository implements BookRepository {
     private List<Book> getAllBooksFromLibrariesText() {
         List<Book> books = new ArrayList<>();
         assert files != null;
-        for (File libraries: files) {
+        for (File libraries : files) {
             if (!libraries.getName().startsWith("Text_") || !libraries.isDirectory()
                     || Objects.requireNonNull(libraries.listFiles()).length <= 0)
                 continue;
@@ -70,14 +70,14 @@ public class TextBookRepository implements BookRepository {
     }
 
     @Override
-    public Optional<Book> orderBook(Long id, String issued, String issuedTo) {
+    public Optional<Book> orderBookInLibrary(Long id, String issued, String issuedTo) {
         List<File> filesInLibraries = getFilesInLibraries();
         StringBuilder builder = new StringBuilder();
         Book book = new Book();
-        for (File file: filesInLibraries) {
-            book = createBookByIdIfExist(id,issued,issuedTo, builder, file);
+        for (File file : filesInLibraries) {
+            book = createBookByIdIfExist(id, issued, issuedTo, builder, file);
             if (book.getId() != null && book.getId().equals(id)) {
-                if(book.getIssuedTo().equals(""))
+                if (book.getIssuedTo().equals(""))
                     rewriteFileInLibrary(file, builder.toString());
                 break;
             }
@@ -88,12 +88,12 @@ public class TextBookRepository implements BookRepository {
     }
 
     @Override
-    public Optional<Book> returnBook(Long id) {
+    public Optional<Book> returnBookInLibrary(Long id) {
         List<File> filesInLibraries = getFilesInLibraries();
         StringBuilder builder = new StringBuilder();
         Book book = new Book();
-        for (File file: filesInLibraries) {
-            book = createBookByIdIfExist(id,"","", builder, file);
+        for (File file : filesInLibraries) {
+            book = createBookByIdIfExist(id, "", "", builder, file);
             if (book.getId() != null && book.getId().equals(id)) {
                 rewriteFileInLibrary(file, builder.toString());
                 break;
@@ -135,7 +135,7 @@ public class TextBookRepository implements BookRepository {
                     book.setIssuedTo(paramAndValue.length == 2 ? paramAndValue[1] : "");
                     builder.append("IssuedTo=").append(issuedTo);
                 } else {
-                    textBookMapper.fillBook(paramAndValue[0],paramAndValue[1],book);
+                    textBookMapper.fillBook(paramAndValue[0], paramAndValue[1], book);
                     builder.append(bookParamsValue).append("\n");
                 }
             }

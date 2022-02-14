@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface BookRepository {
 
-    Optional<Book> returnBook(Long id);
+    Optional<Book> returnBookInLibrary(Long id);
 
-    Optional<Book> orderBook(Long id, String issued, String issuedTo);
+    Optional<Book> orderBookInLibrary(Long id, String issued, String issuedTo);
 
     List<Book> getBooksByName(String name);
 

@@ -10,9 +10,10 @@ import java.util.Arrays;
 
 public class CommandHandler {
 
+    private final File[] libraries = new File("src/main/resources/libraries/").listFiles();
+
     private static CommandHandler commandHandler;
     private final BookServiceImpl bookService;
-    private final File[] libraries = new File("src/main/resources/libraries/").listFiles();
 
     {
         bookService = new BookServiceImpl(Arrays.asList(
